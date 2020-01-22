@@ -4,34 +4,21 @@ load(unz(temp, "CES2015_Combined_R.RData"))
 d <- CES2015_Combined
 rm(CES2015_Combined)
 
-d$p_like_abor[d$p_like_abor > 100] <- NA
-d$p_like_angl[d$p_like_angl > 100] <- NA
-d$p_like_fran[d$p_like_fran > 100] <- NA
-d$p_like_can[d$p_like_can > 100] <- NA
-d$p_like_immg[d$p_like_immg > 100] <- NA
+liste.thermo <- c("p_like_can","p_like_fran","p_like_angl", "p_like_abor", "p_like_femi", "p_like_immg",
+                  "p_like_us", "p_like_qc", "p_like_gays", "p_like_mino", "p_like_polit")
 
-d$p_like_femi[d$p_like_femi > 100] <- NA
-d$p_like_us[d$p_like_us > 100] <- NA
-d$p_like_qc[d$p_like_qc > 100] <- NA
-d$p_like_gays[d$p_like_gays > 100] <- NA
-d$p_like_mino[d$p_like_mino > 100] <- NA
-d$p_like_polit[d$p_like_polit > 100] <- NA
+d[, liste.thermo][d[,liste.thermo] > 100] <- NA
 
+t.thermo <- aggregate(d[liste.thermo], by = d["first_lang"], FUN=mean,  na.rm=TRUE)
 
 d$first_lang[d$first_lang > 5] <- 6
 d$first_lang <- factor(d$first_lang, levels = c(1,5,6),
                        labels = c("English", "French", "Other"))
 
 
-t.thermo <- aggregate(d[c("p_like_can","p_like_fran","p_like_angl", "p_like_abor", "p_like_femi", "p_like_immg",
-                          "p_like_us", "p_like_qc", "p_like_gays", "p_like_mino", "p_like_polit")], 
-                      by = d["first_lang"], FUN=mean,  na.rm=TRUE)
 #colnames(t.thermo) <- c("Language", "Canada", "Francophones", "Anglophones", "Aboriginals")
 
-
-
-d2 <- d[,c("p_like_can","p_like_fran","p_like_angl", "p_like_abor", "p_like_femi", "p_like_immg",
-           "p_like_us", "p_like_qc", "p_like_gays", "p_like_mino", "p_like_polit", "first_lang", "id")]
+d2 <- d[,c(liste.thermo, "first_lang", "id")]
 
 colnames(d2) <- c("Canada", "Francophones", "Anglophones", "Aboriginals", "Feminists", "Immigrants",
                   "The US", "Quebec", "Gays & Lesbians", "Minorities", "Politicians", "first_lang", "id" )
