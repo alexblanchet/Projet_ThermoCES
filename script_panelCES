@@ -1,0 +1,42 @@
+## Loading the datasets
+## CES 2011
+#temp <- tempfile()
+#download.file("https://ces-eec.sites.olt.ubc.ca/files/2014/07/CES2011-final-1.zip",temp)
+#library(haven)
+#df11 <- read_sav(unz(temp, "CPS&PES&MBS&WEB_2011_final.sav"))
+
+# CES Merged 2004-2011 panel study
+temp <- tempfile()
+download.file("https://ces-eec.sites.olt.ubc.ca/files/2014/07/CES_04060811_final_without-geo-data.zip",temp)
+df<- read_stata(unz(temp, "CES_04060811_final_without-geo-data.dta"))
+
+table(df$ther)
+
+# thermo 2011
+liste.thermo11 <- c("PES11_11","PES11_12", "PES11_13", "PES11_14", "PES11_15",
+                    "PES11_16", "PES11_17", "PES11_18", "PES11_19", "PES11_20",
+                    "PES11_21",)
+
+var.names11 <- c("Canada", "The US", "Quebec", "Federal Politicians", "Aboriginal peoples",
+                 "Gays & Lesbians", "Feminists", "Racial minorities", "Whites", "Catholics")
+
+
+#thermo 2008
+liste.thermo08 <- c("ces08_PES_F5", "ces08_PES_C7", "ces08_PES_C8", "ces08_PES_C9", "ces08_PES_C3",
+                    "ces08_PES_C4", "ces08_PES_C5", "ces08_PES_C6")
+
+var.names08 <- c("Politicians in general", "Canada", "The US", "Quebec",  "Aboriginal peoples",
+                 "Feminists", "Racial minorities", "Gays & Lesbians")
+
+# Thermo 2006
+liste.thermo06 <- c("ces06_PES_F5", "ces06_PES_C9", "ces06_PES_C8", "ces06_PES_C7", "ces06_PES_C3",
+                    "ces06_PES_C2", "ces06_PES_C4", "ces06_PES_C5", "ces06_PES_C6")
+
+var.names06 <- c("Politicians in general", "Quebec", "The US", "Canada", "Aboriginal peoples",
+                 "Political parties in general", "Feminists", "Racial minorities", "Gays & Lesbians")
+
+# Thermo 2004
+liste.thermo04 <- c("ces04_CPS_G6", "ces04_PES_C2D", "ces04_PES_C3B", "ces04_PES_C5", "ces04_PES_C6",
+                    "ces04_PES_C7", "ces04_PES_C8", "ces04_PES_C9")
+var.names04 <- c("Politicians in general", "Political parties in general", "The US", "Quebec", "Aboriginal peoples",
+                 "Feminists", "Racial minorities", "Gays & Lesbians")
