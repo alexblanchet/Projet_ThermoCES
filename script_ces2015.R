@@ -59,9 +59,9 @@ library(RColorBrewer)
 # Ordre du plot
 t.thermo$ordre <- rank(t.thermo$Mean)
 
-ggplot(t.thermo, aes(x= reorder(Target, ordre), y=Mean, color=Language)) +
+# With coord_flip() but the legend is "wrong"
+ggplot(t.thermo, aes(x = reorder(Target, ordre), y = Mean, color = Language)) +
   geom_pointrange(aes(ymin=ll, ymax=ul), position=position_dodge(.3), shape=1) +
-  #  geom_vline(xintercept = tapply(pred.dat$fit, pred.dat$Language, mean, na.rm=T)[1], linetype="dotted", size=1) +
   xlab("Target Group") +
   ylab("Average Thermometer Rating") +
   ylim(45,100) +
@@ -70,3 +70,18 @@ ggplot(t.thermo, aes(x= reorder(Target, ordre), y=Mean, color=Language)) +
   labs(title = "Average Thermometer Rating for Various Target Groups by Respondent's Mother Tongue",
        subtitle = "Data: Canadian Election Study 2015") +
   theme_minimal()
+
+# With ggstance::geom_pointrangeh
+ggplot(t.thermo, aes(y = reorder(Target, ordre), x = Mean, color = Language)) + 
+  ggstance::geom_pointrangeh(aes(xmin = ll, xmax = ul), 
+                             position="dodge", shape=1) + # dodge not working
+  ylab("Target Group") +
+  xlab("Average Thermometer Rating") +
+ # ylim(45,100) +
+  scale_color_brewer("Respondents' Language", palette = "Set1") +
+  labs(title = "Average Thermometer Rating for Various Target Groups by Respondent's Mother Tongue",
+       subtitle = "Data: Canadian Election Study 2015") +
+  theme_minimal()
+
+
+
