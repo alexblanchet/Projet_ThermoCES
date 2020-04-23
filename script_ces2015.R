@@ -1,9 +1,11 @@
+################ Download and load data
 temp <- tempfile()
 download.file("https://ces-eec.sites.olt.ubc.ca/files/2017/04/CES2015_Combined_R.zip",temp)
 load(unz(temp, "CES2015_Combined_R.RData"))
 df <- CES2015_Combined
 rm(CES2015_Combined)
 
+################ Thermometer items' list
 liste.thermo <- c("p_like_can","p_like_fran","p_like_angl", "p_like_abor", "p_like_femi", "p_like_immg",
                   "p_like_us", "p_like_qc", "p_like_gays", "p_like_mino", "p_like_polit")
 
@@ -11,24 +13,28 @@ var.names <- c("Language", "Canada", "Francophones", "Anglophones", "Aboriginals
                "Feminists", "Immigrants", "The US", "Quebec", "Gays & Lesbians", 
                "Minorities", "Politicians")
 
+################ Data cleaning
 df[, liste.thermo][df[,liste.thermo] > 100] <- NA
 
 df$first_lang[df$first_lang > 5] <- 6
 df$first_lang <- factor(df$first_lang, levels = c(1,5,6),
                         labels = c("English", "French", "Other"))
 
-t.thermo <- aggregate(df[liste.thermo], by = df["first_lang"], FUN = mean,  na.rm=TRUE)
+################ Compute means and SDs
 
-t.thermo.mu <- aggregate(df[liste.thermo], by = df["first_lang"], FUN = mean,  na.rm=TRUE)
+t.thermo.mu <- aggregate(df[liste.thermo], by = df["first_lang"], 
+                         FUN = mean,  na.rm=TRUE)
 colnames(t.thermo.mu) <- var.names
 
-t.thermo.sd <- aggregate(df[liste.thermo], by = df["first_lang"], FUN = sd,  na.rm=TRUE)
+t.thermo.sd <- aggregate(df[liste.thermo], by = df["first_lang"], 
+                         FUN = sd,  na.rm=TRUE)
 colnames(t.thermo.sd) <- var.names
 
-t.thermo.n <- aggregate(df[liste.thermo], by = df["first_lang"], function(x) length(which(!is.na(x))))
+t.thermo.n <- aggregate(df[liste.thermo], by = df["first_lang"], 
+                        function(x) length(which(!is.na(x))))
 colnames(t.thermo.n) <- var.names
 
-
+################ Data prep for ggplot
 library(reshape2)
 t.thermo.mu.l <- melt(t.thermo.mu, id.vars = "Language")
 colnames(t.thermo.mu.l) <- c("Language", "Target", "Mean")
