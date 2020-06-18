@@ -59,22 +59,11 @@ library(RColorBrewer)
 # Ordre du plot
 t.thermo$ordre <- rank(t.thermo$Mean)
 
-# With coord_flip() but the legend is "wrong"
-ggplot(t.thermo, aes(x = reorder(Target, ordre), y = Mean, color = Language)) +
-  geom_pointrange(aes(ymin=ll, ymax=ul), position=position_dodge(.3), shape=1) +
-  xlab("Target Group") +
-  ylab("Average Thermometer Rating") +
-  ylim(45,100) +
-  scale_color_brewer("Respondents' Language", palette = "Set1") +
-  coord_flip() +
-  labs(title = "Average Thermometer Rating for Various Target Groups by Respondent's Mother Tongue",
-       subtitle = "Data: Canadian Election Study 2015") +
-  theme_minimal()
-
 # With ggstance::geom_pointrangeh
 ggplot(t.thermo, aes(y = reorder(Target, ordre), x = Mean, color = Language)) + 
   ggstance::geom_pointrangeh(aes(xmin = ll, xmax = ul), 
-                             position="dodge", shape=1) + # dodge not working
+                             position = position_dodge(width = 0.4), 
+                             shape=1) + # dodge not working
   ylab("Target Group") +
   xlab("Average Thermometer Rating") +
  # ylim(45,100) +
@@ -82,6 +71,48 @@ ggplot(t.thermo, aes(y = reorder(Target, ordre), x = Mean, color = Language)) +
   labs(title = "Average Thermometer Rating for Various Target Groups by Respondent's Mother Tongue",
        subtitle = "Data: Canadian Election Study 2015") +
   theme_minimal()
+ggsave("thermo.jpg", width = 10, height = 5)
+
+######################### Figure delta ingroup
+
+########## Compute delta ingroup
+t.thermo$detal_ingroup <- ifelse(
+  t.thermo$Language == "English", t.thermo$Mean - t.thermo[2, 3], ifelse(
+  t.thermo$Language == "French", t.thermo$Mean - t.thermo[16, 3], ifelse(
+  t.thermo$Language == "Other", t.thermo$Mean - t.thermo[30, 3],  NA)
+  ))
+
+t.thermo$detal_ingroup.ll <- ifelse(
+  t.thermo$Language == "English", t.thermo$ll - t.thermo[2, 3], ifelse(
+  t.thermo$Language == "French", t.thermo$ll - t.thermo[16, 3], ifelse(
+  t.thermo$Language == "Other", t.thermo$ll - t.thermo[30, 3],  NA)
+  ))
+
+t.thermo$detal_ingroup.ul <- ifelse(
+  t.thermo$Language == "English", t.thermo$ul - t.thermo[2, 3], ifelse(
+  t.thermo$Language == "French", t.thermo$ul - t.thermo[16, 3], ifelse(
+  t.thermo$Language == "Other", t.thermo$ul - t.thermo[30, 3],  NA)
+  ))
+
+# Figure
+ggplot(t.thermo, aes(y = reorder(Target, ordre), 
+                     x = detal_ingroup, 
+                     color = Language)) + 
+  ggstance::geom_pointrangeh(aes(xmin = detal_ingroup.ll, 
+                                 xmax = detal_ingroup.ul), 
+                             position = position_dodge(width = 0.4), 
+                             shape=1) + # dodge not working
+  ylab("Target Group") +
+  xlab("Difference Between Average Themometer Rating and Ingroup") +
+ # ylim(-20, 20) +
+  scale_color_brewer("Respondents' Language", palette = "Set1") +
+  labs(title = "Difference Between Average Themometer Rating and Ingroup for Various Target Groups by Respondent's Mother Tongue",
+       subtitle = "Data: Canadian Election Study 2015 \n
+       In groups are respectively Anglophones, Francophones and 
+       Minorities for English, French and Others as mother tongue") +
+  geom_vline(xintercept = 0, colour = "red", lty = 2) +
+  theme_minimal()
+ggsave("delta_ingroup.jpg", width = 10, height = 5)
 
 
 
